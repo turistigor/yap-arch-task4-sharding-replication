@@ -1,10 +1,11 @@
-# Конды для настройки шардирования и запуска системы
+# Настройка шардирования и запуск системы
 
 Нижеприведенная последовательность команд составлена в том числе для изучения с контролем изменений и результатов отдельных команд. Для быстроты можно воспользоваться [скриптом](run.sh), содержащим необходимый минимум. В нем нет вывода и проверок успешности операций. При необходимости можно воспользоваться [скриптом очистки](clean.sh) и начать все заново.
 
-- Создание и запуск сервиса конфигураций и двух шардов.
+- Создание и запуск сервиса
 ```bash
-docker-compose up -d config_srv shard1 shard2
+docker-compose up -d
+watch docker-compose ps  # till Up state for the every service
 ```
 
 - Настройка сервиса конфигураций (с командами проверки результатов)
@@ -59,7 +60,6 @@ exit();
 - Запуск и настройка роутера (с командами проверки результатов)
 
 ```bash
-docker-compose up -d mongos_router
 docker exec -it mongos_router mongosh --port 27020
 
 sh.status();  # Много всего, важно: "shards[]"
@@ -91,11 +91,13 @@ exit();
 ```bash
 docker exec -it shard1 mongosh -port 27018
 use somedb;
-db.helloDoc.countDocuments();  # X1 - часть от общего количества документов в mongos_router ()
+db.helloDoc.countDocuments();  # X1 - часть от общего количества документов в mongos_router
+exit();
 
 docker exec -it shard2 mongosh -port 27019
 use somedb;
 db.helloDoc.countDocuments();  # X2 - часть от общего количества документов в mongos_router
+exit();
 
 # X1 + X2 = N + 1000
 ```

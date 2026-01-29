@@ -1,11 +1,10 @@
-
 version: '3.8'
 
 services:
   pymongo_api:
     container_name: pymongo_api
     build: 
-      context: .
+      context: api_app
       dockerfile: Dockerfile
     depends_on:
       - mongos_router
@@ -26,13 +25,6 @@ services:
     networks:
       app-network:
         ipv4_address: 173.17.0.7
-    depends_on:
-      config_srv:
-        condition: service_healthy
-      shard1:
-        condition: service_healthy
-      shard2:
-        condition: service_healthy
     command:
       [
         "mongos",
