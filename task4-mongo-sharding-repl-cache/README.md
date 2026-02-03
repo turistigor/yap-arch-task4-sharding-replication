@@ -4,7 +4,6 @@
 
 - Запуск и настройка необходимых сервисов.
   ```bash
-  cd mongo-sharding-repl-cache
   ./run.sh
   ```
 
