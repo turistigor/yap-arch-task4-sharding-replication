@@ -2,24 +2,23 @@
 
 Схема масштабирования: [drawio](arch.drawio) | [png](arch.png).
 
-В этом задании, в отличии о предыдущих, не просили прикладывать инструкции и осуществлять какое-либо развертывание, однако я заинтересовался темой и решил проделать эту работу. По этой инпричине инструкция менее подробная, чем в других заданиях, где её просили явно.
+В этом задании, в отличии о предыдущих, не просили прикладывать инструкции и осуществлять какое-либо развертывание, однако я заинтересовался темой и решил проделать эту работу. По этой причине инструкция менее подробная, чем в других заданиях, где её просили явно.
 
 <details>
 <summary> Инструкция </summary>
 
 - Запуск и настройка необходимых сервисов.
   ```bash
-  cd service_discovery_api_gw
   ./run.sh
   ```
 
 - Проверка работы балансировки:
   ```bash
   # Первый терминал: мониторинг логов 1ого инстанса
-  watch docker-compose logs pymongo_api1
+  watch -d "docker-compose logs pymongo_api1 | tail"
 
   # Второй терминал: мониторинг логов 2ого инстанса
-  watch docker-compose logs pymongo_api2
+  watch -d "docker-compose logs pymongo_api2 | tail"
 
   # Третий терминал: запросы
   curl http://localhost:9080
@@ -34,10 +33,10 @@
 - Проверка отказоустойчивости:
   ```bash
   # Первый терминал: мониторинг логов 1ого инстанса
-  watch docker-compose logs pymongo_api1
+  watch -d "docker-compose logs pymongo_api1 | tail"
 
   # Второй терминал: мониторинг логов 2ого инстанса
-  watch docker-compose logs pymongo_api2
+  watch -d "docker-compose logs pymongo_api2 | tail"
 
   # Третий терминал
   docker-compose stop pymongo_api1
@@ -64,10 +63,10 @@
 - Проверка возможностей ServiceDiscovery:
   ```bash
   # Первый терминал: мониторинг логов 1ого инстанса
-  watch docker-compose logs pymongo_api1
+  watch -d "docker-compose logs pymongo_api1 | tail"
 
   # Второй терминал: мониторинг логов 2ого инстанса
-  watch docker-compose logs pymongo_api2
+  watch -d "docker-compose logs pymongo_api2 | tail"
 
   # Третий терминал
   # Дерегистрируем один из инстансов в Consul
@@ -90,6 +89,9 @@
       "Warning": 1
     }
   }'
+  curl http://localhost:9080
+  curl http://localhost:9080
+  curl http://localhost:9080
   ```
   Ожидаемый результат:
   - После дерегистрации pymongo_api1 все запросы успешно обрабатываются pymongo_api2.
