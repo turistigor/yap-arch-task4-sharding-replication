@@ -1,0 +1,47 @@
+@startuml mobile_world_containers
+
+' Initial settings:
+
+title Mobile world containers
+
+top to bottom direction
+
+!include ../lib/C4_Container.puml
+
+
+' Actors & components:
+
+Person(client, "Client")
+
+Container_Boundary(shop, "Mobile world") {
+    Container(site, "Website", "REST API")
+    Container(back, "Backend", "REST API")
+    Container(pymongo_api, "PyMongo API", "REST API")
+    ContainerDb(mongo_db, "Mongo DB", "")
+    Container(orders, "Orders", "REST API")
+    Container(cassandra_db, "Cassandra DB")
+    ContainerQueue(msgs_broker, "Msgs broker", "Kafka")
+    ContainerQueue(atasks, "Background tasks", "Celery/Spring Batch/...")
+}
+
+
+' Relations:
+
+Rel(client, site, "Request")
+
+Rel(site, back, "Request")
+Rel(back, pymongo_api, "Read/write")
+Rel(pymongo_api, mongo_db, "Read/write")
+
+Rel(site, orders, "Request")
+Rel(orders, msgs_broker, "msg:order:created")
+Rel(msgs_broker, back, "msg:order:created")
+Rel(back, msgs_broker, "msg:rems:success/failed")
+Rel(msgs_broker, atasks, "msg:rems:success/failed")
+Rel(atasks, orders, "msg:rems:success/failed")
+Rel(orders, cassandra_db, "Create order [pending]")
+Rel(orders, atasks, "Order control")
+Rel(orders, cassandra_db, "Order approve/reject")
+Rel(orders, site, "Order approved/rejected")
+
+@enduml
